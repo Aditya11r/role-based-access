@@ -211,7 +211,7 @@ async function handleApi(req, res) {
     });
 
     if (result.error) return sendError(res, 409, result.error);
-    return sendJson(res, 201, { user: publicUser(result.user) }, { "Set-Cookie": sessionCookie(createSession(result.user)) });
+    return sendJson(res, 201, { user: publicUser(result.user) });
   }
 
   if (method === "GET" && pathname === "/api/health") {

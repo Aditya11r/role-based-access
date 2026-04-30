@@ -17,6 +17,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -129,13 +133,11 @@ h3 {
   font-size: clamp(2rem, 8vw, 3.8rem);
 }
 
-.tabs,
 .nav-tabs {
   display: flex;
   gap: 0.5rem;
 }
 
-.tab,
 .nav-link,
 .ghost {
   min-height: 40px;
@@ -147,7 +149,6 @@ h3 {
   font-weight: 800;
 }
 
-.tab.is-active,
 .nav-link.is-active {
   background: var(--ink);
   border-color: var(--ink);
@@ -175,6 +176,36 @@ h3 {
 .form-grid {
   display: grid;
   gap: 1rem;
+}
+
+.auth-step {
+  display: grid;
+  gap: 1rem;
+}
+
+.step-head {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.step-head h2 {
+  font-size: 1.45rem;
+}
+
+.step-head p {
+  color: var(--muted);
+}
+
+.text-button {
+  width: fit-content;
+  background: transparent;
+  color: var(--brand);
+  padding: 0;
+  font-weight: 850;
+}
+
+.text-button:hover {
+  color: var(--brand-strong);
 }
 
 .app-shell {
@@ -351,6 +382,12 @@ h3 {
 .task-form textarea,
 .task-form button {
   grid-column: span 2;
+}
+
+.form-hint {
+  align-self: center;
+  color: var(--warning);
+  font-weight: 800;
 }
 
 .project-grid {

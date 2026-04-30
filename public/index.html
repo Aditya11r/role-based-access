@@ -16,38 +16,47 @@
           <h1>Projects, tasks, and accountability in one workspace.</h1>
         </div>
 
-        <div class="tabs" role="tablist">
-          <button id="loginTab" class="tab is-active" type="button">Login</button>
-          <button id="signupTab" class="tab" type="button">Signup</button>
-        </div>
+        <section id="signupPanel" class="auth-step">
+          <div class="step-head">
+            <h2>Signup</h2>
+            <p>Create your account first. The first account becomes Admin.</p>
+          </div>
+          <form id="signupForm" class="form-grid">
+            <label>
+              Name
+              <input name="name" type="text" autocomplete="name" minlength="2" required>
+            </label>
+            <label>
+              Email
+              <input name="email" type="email" autocomplete="email" required>
+            </label>
+            <label>
+              Password
+              <input name="password" type="password" autocomplete="new-password" minlength="8" required>
+            </label>
+            <button class="primary" type="submit">Create account</button>
+          </form>
+          <button id="goLogin" class="text-button" type="button">Already registered? Login</button>
+        </section>
 
-        <form id="loginForm" class="form-grid">
-          <label>
-            Email
-            <input name="email" type="email" autocomplete="email" required>
-          </label>
-          <label>
-            Password
-            <input name="password" type="password" autocomplete="current-password" required>
-          </label>
-          <button class="primary" type="submit">Login</button>
-        </form>
-
-        <form id="signupForm" class="form-grid" hidden>
-          <label>
-            Name
-            <input name="name" type="text" autocomplete="name" minlength="2" required>
-          </label>
-          <label>
-            Email
-            <input name="email" type="email" autocomplete="email" required>
-          </label>
-          <label>
-            Password
-            <input name="password" type="password" autocomplete="new-password" minlength="8" required>
-          </label>
-          <button class="primary" type="submit">Create account</button>
-        </form>
+        <section id="loginPanel" class="auth-step" hidden>
+          <div class="step-head">
+            <h2>Login</h2>
+            <p>Login after signup to open your tracking workspace.</p>
+          </div>
+          <form id="loginForm" class="form-grid">
+            <label>
+              Email
+              <input name="email" type="email" autocomplete="email" required>
+            </label>
+            <label>
+              Password
+              <input name="password" type="password" autocomplete="current-password" required>
+            </label>
+            <button class="primary" type="submit">Login</button>
+          </form>
+          <button id="goSignup" class="text-button" type="button">Need an account? Signup</button>
+        </section>
       </section>
     </main>
 
@@ -136,6 +145,7 @@
             <select name="assigneeId" required></select>
             <input name="dueDate" type="date">
             <textarea name="description" placeholder="Task notes"></textarea>
+            <p id="taskFormHint" class="form-hint"></p>
             <button class="primary" type="submit">Assign task</button>
           </form>
 

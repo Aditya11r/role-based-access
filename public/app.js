@@ -49,10 +49,8 @@ function formData(form) {
 
 function setAuthMode(mode) {
   const login = mode === "login";
-  $("#loginTab").classList.toggle("is-active", login);
-  $("#signupTab").classList.toggle("is-active", !login);
-  $("#loginForm").hidden = !login;
-  $("#signupForm").hidden = login;
+  $("#loginPanel").hidden = !login;
+  $("#signupPanel").hidden = login;
 }
 
 function updateShell() {
@@ -218,7 +216,24 @@ function renderTeamEditor() {
 function populateTaskForm() {
   const projectSelect = $("#taskForm select[name='projectId']");
   const assigneeSelect = $("#taskForm select[name='assigneeId']");
+  const submitButton = $("#taskForm button[type='submit']");
+  const hint = $("#taskFormHint");
   if (!projectSelect || !assigneeSelect) return;
+
+  if (!state.projects.length) {
+    projectSelect.innerHTML = `<option value="">Create a project first</option>`;
+    assigneeSelect.innerHTML = `<option value="">No assignees yet</option>`;
+    projectSelect.disabled = true;
+    assigneeSelect.disabled = true;
+    submitButton.disabled = true;
+    hint.textContent = "Create a project in the Projects tab before assigning tasks.";
+    return;
+  }
+
+  projectSelect.disabled = false;
+  assigneeSelect.disabled = false;
+  submitButton.disabled = false;
+  hint.textContent = "";
 
   projectSelect.innerHTML = `<option value="">Project</option>${state.projects.map((project) => `
     <option value="${project.id}">${escapeHtml(project.name)}</option>
@@ -233,7 +248,26 @@ function populateAssignees() {
   const projectId = $("#taskForm select[name='projectId']").value;
   const project = state.projects.find((item) => item.id === projectId);
   const assigneeSelect = $("#taskForm select[name='assigneeId']");
+  const submitButton = $("#taskForm button[type='submit']");
+  const hint = $("#taskFormHint");
   const members = project?.members || [];
+
+  if (!project) {
+    assigneeSelect.innerHTML = `<option value="">Select project first</option>`;
+    submitButton.disabled = true;
+    hint.textContent = "Select a project before assigning a task.";
+    return;
+  }
+
+  if (!members.length) {
+    assigneeSelect.innerHTML = `<option value="">No project members</option>`;
+    submitButton.disabled = true;
+    hint.textContent = "Add at least one member to this project before assigning tasks.";
+    return;
+  }
+
+  submitButton.disabled = false;
+  hint.textContent = "";
   assigneeSelect.innerHTML = `<option value="">Assignee</option>${members.map((member) => `
     <option value="${member.id}">${escapeHtml(member.name)}</option>
   `).join("")}`;
@@ -273,22 +307,24 @@ async function boot() {
     await loadData();
   } catch {
     state.user = null;
+    setAuthMode("signup");
     updateShell();
   }
 }
 
-$("#loginTab").addEventListener("click", () => setAuthMode("login"));
-$("#signupTab").addEventListener("click", () => setAuthMode("signup"));
+$("#goLogin").addEventListener("click", () => setAuthMode("login"));
+$("#goSignup").addEventListener("click", () => setAuthMode("signup"));
 
 $("#loginForm").addEventListener("submit", async (event) => {
   event.preventDefault();
+  const form = event.currentTarget;
   try {
     const payload = await api("/api/auth/login", {
       method: "POST",
-      body: JSON.stringify(formData(event.currentTarget))
+      body: JSON.stringify(formData(form))
     });
     state.user = payload.user;
-    event.currentTarget.reset();
+    form.reset();
     await loadData();
   } catch (error) {
     showToast(error.message);
@@ -297,14 +333,17 @@ $("#loginForm").addEventListener("submit", async (event) => {
 
 $("#signupForm").addEventListener("submit", async (event) => {
   event.preventDefault();
+  const form = event.currentTarget;
   try {
-    const payload = await api("/api/auth/signup", {
+    const body = formData(form);
+    await api("/api/auth/signup", {
       method: "POST",
-      body: JSON.stringify(formData(event.currentTarget))
+      body: JSON.stringify(body)
     });
-    state.user = payload.user;
-    event.currentTarget.reset();
-    await loadData();
+    form.reset();
+    $("#loginForm input[name='email']").value = body.email;
+    setAuthMode("login");
+    showToast("Account created. Login to continue.");
   } catch (error) {
     showToast(error.message);
   }
@@ -324,14 +363,15 @@ $$(".nav-link").forEach((button) => {
 
 $("#projectForm").addEventListener("submit", async (event) => {
   event.preventDefault();
+  const form = event.currentTarget;
   try {
-    const body = formData(event.currentTarget);
+    const body = formData(form);
     body.memberIds = state.users.map((user) => user.id);
     await api("/api/projects", {
       method: "POST",
       body: JSON.stringify(body)
     });
-    event.currentTarget.reset();
+    form.reset();
     await loadData();
     showToast("Project created.");
   } catch (error) {
@@ -343,12 +383,23 @@ $("#taskForm select[name='projectId']").addEventListener("change", populateAssig
 
 $("#taskForm").addEventListener("submit", async (event) => {
   event.preventDefault();
+  const form = event.currentTarget;
+  const body = formData(form);
+  if (!body.projectId) {
+    showToast("Create and select a project before assigning a task.");
+    switchView("projectsView");
+    return;
+  }
+  if (!body.assigneeId) {
+    showToast("Select an assignee before assigning a task.");
+    return;
+  }
   try {
     await api("/api/tasks", {
       method: "POST",
-      body: JSON.stringify(formData(event.currentTarget))
+      body: JSON.stringify(body)
     });
-    event.currentTarget.reset();
+    form.reset();
     await loadData();
     showToast("Task assigned.");
   } catch (error) {
