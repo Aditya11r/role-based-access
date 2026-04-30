@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Team Task Manager</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <div id="toast" class="toast" hidden></div>
+
+    <main id="authView" class="auth-shell" hidden>
+      <section class="auth-panel">
+        <div>
+          <p class="eyebrow">Team Task Manager</p>
+          <h1>Projects, tasks, and accountability in one workspace.</h1>
+        </div>
+
+        <div class="tabs" role="tablist">
+          <button id="loginTab" class="tab is-active" type="button">Login</button>
+          <button id="signupTab" class="tab" type="button">Signup</button>
+        </div>
+
+        <form id="loginForm" class="form-grid">
+          <label>
+            Email
+            <input name="email" type="email" autocomplete="email" required>
+          </label>
+          <label>
+            Password
+            <input name="password" type="password" autocomplete="current-password" required>
+          </label>
+          <button class="primary" type="submit">Login</button>
+        </form>
+
+        <form id="signupForm" class="form-grid" hidden>
+          <label>
+            Name
+            <input name="name" type="text" autocomplete="name" minlength="2" required>
+          </label>
+          <label>
+            Email
+            <input name="email" type="email" autocomplete="email" required>
+          </label>
+          <label>
+            Password
+            <input name="password" type="password" autocomplete="new-password" minlength="8" required>
+          </label>
+          <button class="primary" type="submit">Create account</button>
+        </form>
+      </section>
+    </main>
+
+    <main id="appView" class="app-shell" hidden>
+      <aside class="sidebar">
+        <div>
+          <p class="eyebrow">Workspace</p>
+          <h1>Team Task Manager</h1>
+        </div>
+        <nav class="nav-tabs" aria-label="Main navigation">
+          <button class="nav-link is-active" data-view="dashboardView" type="button">Dashboard</button>
+          <button class="nav-link" data-view="projectsView" type="button">Projects</button>
+          <button class="nav-link" data-view="tasksView" type="button">Tasks</button>
+          <button class="nav-link admin-only" data-view="adminView" type="button">Admin</button>
+        </nav>
+        <div class="profile">
+          <div>
+            <strong id="currentUserName"></strong>
+            <span id="currentUserRole"></span>
+          </div>
+          <button id="logoutButton" class="ghost" type="button">Logout</button>
+        </div>
+      </aside>
+
+      <section class="content">
+        <section id="dashboardView" class="view is-visible">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Overview</p>
+              <h2>Dashboard</h2>
+            </div>
+            <button id="refreshButton" class="ghost" type="button">Refresh</button>
+          </div>
+          <div id="metricGrid" class="metric-grid"></div>
+          <div class="split">
+            <section>
+              <h3>Status</h3>
+              <div id="statusBars" class="status-bars"></div>
+            </section>
+            <section>
+              <h3>Recently updated</h3>
+              <div id="recentTasks" class="list"></div>
+            </section>
+          </div>
+        </section>
+
+        <section id="projectsView" class="view">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Team spaces</p>
+              <h2>Projects</h2>
+            </div>
+          </div>
+          <form id="projectForm" class="inline-form admin-only">
+            <input name="name" type="text" placeholder="Project name" minlength="2" required>
+            <input name="description" type="text" placeholder="Description">
+            <button class="primary" type="submit">Create</button>
+          </form>
+          <div id="projectsList" class="project-grid"></div>
+        </section>
+
+        <section id="tasksView" class="view">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Execution</p>
+              <h2>Tasks</h2>
+            </div>
+            <div class="filters">
+              <select id="statusFilter" aria-label="Filter by status">
+                <option value="">All status</option>
+                <option value="todo">To do</option>
+                <option value="in-progress">In progress</option>
+                <option value="blocked">Blocked</option>
+                <option value="done">Done</option>
+              </select>
+              <label class="checkline">
+                <input id="mineFilter" type="checkbox">
+                Mine
+              </label>
+            </div>
+          </div>
+
+          <form id="taskForm" class="task-form admin-only">
+            <input name="title" type="text" placeholder="Task title" minlength="2" required>
+            <select name="projectId" required></select>
+            <select name="assigneeId" required></select>
+            <input name="dueDate" type="date">
+            <textarea name="description" placeholder="Task notes"></textarea>
+            <button class="primary" type="submit">Assign task</button>
+          </form>
+
+          <div id="tasksList" class="list task-list"></div>
+        </section>
+
+        <section id="adminView" class="view">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Access control</p>
+              <h2>Admin</h2>
+            </div>
+          </div>
+          <div class="split">
+            <section>
+              <h3>Users</h3>
+              <div id="usersList" class="list"></div>
+            </section>
+            <section>
+              <h3>Project teams</h3>
+              <div id="teamEditor" class="list"></div>
+            </section>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
